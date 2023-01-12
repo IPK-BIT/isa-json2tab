@@ -1,14 +1,29 @@
-from bottle import route, run, template, response, request
+from bottle import route, run, template, response, request, hook, HTTPResponse
 from isatools.convert import json2isatab
 from tempfile import mkdtemp
 from shutil import rmtree, make_archive
 from os import mkdir
 
-@route('/json2tab', method='OPTIONS')
-def allow_cors():
-    response.set_header('Access-Control-Allow-Origin', '*')
-    response.set_header("Access-Control-Allow-Methods", "OPTIONS,POST")
-    response.set_header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+
+cors_headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers'
+}
+
+
+@hook('before_request')
+def handle_options():
+    if request.method == 'OPTIONS':
+        # Bypass request routing and immediately return a response
+        raise HTTPResponse(headers=cors_headers)
+
+
+@hook('after_request')
+def enable_cors():
+    for key, value in cors_headers.items():
+       response.set_header(key, value)
+
 
 @route('/json2tab', method='POST')
 def do_login():
