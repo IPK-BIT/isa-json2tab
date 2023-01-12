@@ -7,7 +7,7 @@ from os import mkdir
 
 cors_headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers'
 }
 
@@ -25,10 +25,8 @@ def enable_cors():
        response.set_header(key, value)
 
 
-@route('/json2tab', method='POST')
-def do_login():
-    response.set_header('Access-Control-Allow-Origin', '*')
-    response.set_header('Access-Control-Allow-Headers', '*/*')
+@route('/isa-json2tab/json2tab', method='POST')
+def convert_isa():
     tmp_dir = mkdtemp()
     with open(tmp_dir + "/request.json", "wb") as f:
       f.write(request.body.read())
